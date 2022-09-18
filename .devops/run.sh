@@ -23,7 +23,7 @@ then
     ApplicationName=${APPNAME} \
     NameSpaceName=${K8S_NAMESPACE} \
     ApplicationScope=${APPLICATION_SCOPE} \
-    FullSlackUrl=${CHATOPS_URL} \
+    ChatOpsUrl=${CHATOPS_URL} \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 elif [ $PIPELINE_TYPE == "build" ]
 then
@@ -36,6 +36,6 @@ then
     GitHubToken=${GITHUB_TOKEN} \
     ApplicationName=${APPNAME} \
     ApplicationScope=${APPLICATION_SCOPE} \
-    FullSlackUrl=${CHATOPS_URL} \
+    ChatOpsUrl=${CHATOPS_URL} \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 fi
