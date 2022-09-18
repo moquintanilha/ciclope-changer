@@ -1,0 +1,5 @@
+.env
+.devops/
+*.hmtl
+node_modules/
+jest-html-reporters-attach/

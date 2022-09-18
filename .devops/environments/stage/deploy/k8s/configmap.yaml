@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  API_VERSION: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: ciclope-chatops-config
+  namespace: ciclope
