@@ -3,7 +3,6 @@
 read -p 'What is application name: ' APPNAME
 read -p 'What is your application scope (eg. stage or prod): ' APPLICATION_SCOPE
 read -p 'What is your pipeline type (eg. build or deploy): ' PIPELINE_TYPE
-read -p 'This application have an integration with slack webhook, set a slack url: ' FULL_SLACK_URL
 read -p 'What is Github username: ' GITHUB_USER
 read -sp 'What is GitHub Token: ' GITHUB_TOKEN
 
@@ -23,7 +22,6 @@ then
     ApplicationName=${APPNAME} \
     NameSpaceName=${K8S_NAMESPACE} \
     ApplicationScope=${APPLICATION_SCOPE} \
-    FullSlackUrl=${FULL_SLACK_URL} \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 elif [ $PIPELINE_TYPE == "build" ]
 then
@@ -36,6 +34,5 @@ then
     GitHubToken=${GITHUB_TOKEN} \
     ApplicationName=${APPNAME} \
     ApplicationScope=${APPLICATION_SCOPE} \
-    FullSlackUrl=${FULL_SLACK_URL} \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
 fi

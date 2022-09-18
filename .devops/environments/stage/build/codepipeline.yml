@@ -80,13 +80,6 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
-  
-  FullSlackUrl:
-    Type: String
-    Description: Full slack url
-    MinLength: 3
-    MaxLength: 100
-    ConstraintDescription: Full slack url
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -113,8 +106,6 @@ Metadata:
         default: Branch
       CodeBuildDockerImage:
         default: Docker image
-      FullSlackUrl:
-        default: Full slack url
 
 Resources:
   EcrDockerRepository:
@@ -287,8 +278,6 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: SCOPE
             Value: !Ref ApplicationScope
-          - Name: FULL_SLACK_URL
-            Value: !Ref FullSlackUrl
 
       Name: !Sub
         - Build-${STACK_NAME}
@@ -329,8 +318,6 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: SCOPE
             Value: !Ref ApplicationScope
-          - Name: FULL_SLACK_URL
-            Value: !Ref FullSlackUrl
 
       Name: !Sub
         - BuildTest-${STACK_NAME}
