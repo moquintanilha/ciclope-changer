@@ -33,7 +33,7 @@ phases:
       - export APPLICATION_SCOPE
       - export APPLICATION
       - export APPLICATION_NAME
-      - docker build --build-arg FULL_SLACK_URL=${FULL_SLACK_URL} -t ${APPLICATION_NAME}:${VERSION} .
+      - docker build --build-arg CHATOPS_URL=${CHATOPS_URL} -t ${APPLICATION_NAME}:${VERSION} .
       - docker tag ${APPLICATION_NAME}:${VERSION} ${REPOSITORY_URI}:${APPLICATION_NAME}-${VERSION}
       - docker push ${REPOSITORY_URI}:${APPLICATION_NAME}-${VERSION}
       - echo "Build success!🚀🚀🚀"

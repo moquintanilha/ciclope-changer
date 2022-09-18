@@ -80,6 +80,13 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
+  
+  ChatOpsUrl:
+    Type: String
+    Description: Full slack url
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Full slack url
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -106,6 +113,8 @@ Metadata:
         default: Branch
       CodeBuildDockerImage:
         default: Docker image
+      ChatOpsUrl:
+        default: Full chatops url
 
 Resources:
   EcrDockerRepository:
@@ -278,6 +287,8 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: SCOPE
             Value: !Ref ApplicationScope
+          - Name: CHATOPS_URL
+            Value: !Ref ChatOpsUrl
 
       Name: !Sub
         - Build-${STACK_NAME}
@@ -318,6 +329,8 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: SCOPE
             Value: !Ref ApplicationScope
+          - Name: CHATOPS_URL
+            Value: !Ref ChatOpsUrl
 
       Name: !Sub
         - BuildTest-${STACK_NAME}
