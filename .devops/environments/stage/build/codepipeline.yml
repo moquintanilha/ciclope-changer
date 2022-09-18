@@ -1,0 +1,386 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Build pipeline creation
+
+Parameters:
+
+  # TODO: Update this to final repo name
+  GitOwner:
+    Type: String
+    Description: GitHub owner repository - must contain a Dockerfile and buildspec.yml in the base
+    Default: moquintanilha
+    MinLength: 1
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub repository name
+
+  GitSourceRepo:
+    Type: String
+    Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
+    Default: ciclope-changer
+    MinLength: 1
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub repository name
+
+  GitBranch:
+    Type: String
+    Default: develop
+    Description: GitHub git repository branch - change triggers a new build
+    ConstraintDescription: You must enter a GitHub repository branch name
+
+  GitHubToken:
+    Type: String
+    NoEcho: true
+    Description: GitHub API token - see https://github.com/blog/1509-personal-api-tokens
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub personal access token
+
+  GitHubUser:
+    Type: String
+    Description: GitHub username or organization
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub username or organization
+
+  CodeBuildDockerImage:
+    Type: String
+    Default: aws/codebuild/standard:6.0
+    Description: Default AWS CodeBuild Docker optimized image
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a CodeBuild Docker image
+
+  ApplicationName:
+    Type: String
+    Description: Nombre de aplicacion
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Nombre de la aplicacion
+
+  ApplicationScope:
+    Type: String
+    Description: Ambiente
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Ambiente
+
+  BuildSpecPath:
+    Type: String
+    Default: .devops/environments/stage/build/buildspec.yml
+    Description: Custom Path buildspec.yml
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: CODEBUILD_SRC_DIR
+
+  BuildSpecPathTest:
+    Type: String
+    Default: .devops/environments/stage/build/testspec.yml
+    Description: Custom Path testspec.yml
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: CODEBUILD_SRC_DIR
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: GitHub
+        Parameters:
+          - GitHubUser
+          - GitHubToken
+          - GitSourceRepo
+          - GitBranch
+      - Label:
+          default: CodeBuild
+        Parameters:
+          - CodeBuildDockerImage
+    ParameterLabels:
+      GitHubUser:
+        default: Username
+      GitHubToken:
+        default: Access token
+      GitSourceRepo:
+        default: Repository
+      GitBranch:
+        default: Branch
+      CodeBuildDockerImage:
+        default: Docker image
+
+Resources:
+  EcrDockerRepository:
+    Type: AWS::ECR::Repository
+    DeletionPolicy: Retain
+    Properties:
+      RepositoryName: !Sub
+        - k8s-${STACK_NAME}-ecr
+        - { STACK_NAME: !Ref AWS::StackName }
+
+  CodePipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub
+        - k8s-${STACK_NAME}-artifacts-store
+        - { STACK_NAME: !Ref AWS::StackName }
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub
+        - CodePipeline-ServiceRole-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: codepipeline-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:UploadArchive
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:CancelUploadArchive
+                  - iam:PassRole
+                  - lambda:InvokeFunction
+              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+    DependsOn: EcrDockerRepository
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub
+        - CodeBuild-ServiceRole-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: '*'
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: codebuild-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - eks:Describe*
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - codebuild:CreateReportGroup
+                  - codebuild:CreateReport
+                  - codebuild:UpdateReport
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchCheckLayerAvailability
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeDhcpOptions
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeVpcs
+                  - ec2:CreateNetworkInterfacePermission
+              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${EcrDockerRepository}
+                Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:PutImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Ref BuildSpecPath
+      VpcConfig:
+        VpcId: vpc-facd049c
+        Subnets:
+          - subnet-07f31ecee4ad38a4a
+        SecurityGroupIds:
+          - sg-0beacb292f6270bef
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        PrivilegedMode: true
+        Type: LINUX_CONTAINER
+        Image: !Ref CodeBuildDockerImage
+        EnvironmentVariables:
+          - Name: REPOSITORY_URI
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrDockerRepository}
+          - Name: REPOSITORY_NAME
+            Value: !Ref GitSourceRepo
+          - Name: REPOSITORY_BRANCH
+            Value: !Ref GitBranch
+          - Name: APPLICATION_NAME
+            Value: !Ref ApplicationName
+          - Name: APPLICATION
+            Value: !Ref ApplicationName
+          - Name: APPLICATION_SCOPE
+            Value: !Ref ApplicationScope
+          - Name: SCOPE
+            Value: !Ref ApplicationScope
+
+      Name: !Sub
+        - Build-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+    
+  CodeBuildTestProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Ref BuildSpecPathTest
+      VpcConfig:
+        VpcId: vpc-facd049c
+        Subnets:
+          - subnet-07f31ecee4ad38a4a
+        SecurityGroupIds:
+          - sg-0beacb292f6270bef
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        PrivilegedMode: true
+        Type: LINUX_CONTAINER
+        Image: !Ref CodeBuildDockerImage
+        EnvironmentVariables:
+          - Name: REPOSITORY_URI
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrDockerRepository}
+          - Name: REPOSITORY_NAME
+            Value: !Ref GitSourceRepo
+          - Name: REPOSITORY_BRANCH
+            Value: !Ref GitBranch
+          - Name: APPLICATION_NAME
+            Value: !Ref ApplicationName
+          - Name: APPLICATION
+            Value: !Ref ApplicationName
+          - Name: APPLICATION_SCOPE
+            Value: !Ref ApplicationScope
+          - Name: SCOPE
+            Value: !Ref ApplicationScope
+
+      Name: !Sub
+        - BuildTest-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+  
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub
+        - ${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref CodePipelineArtifactBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHubSource
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitOwner
+                Repo: !Ref GitSourceRepo
+                Branch: !Ref GitBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: GitHubCode
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: GitHubCode
+              OutputArtifacts:
+                - Name: BuildOutput
+              RunOrder: 2
+              Namespace: NsBuildStage
+        - Name: Test
+          Actions:
+            - Name: Test
+              ActionTypeId:
+                Category: Test
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildTestProject
+              InputArtifacts:
+                - Name: GitHubCode
+              OutputArtifacts:
+                - Name: TestOutput
+              RunOrder: 3
+              Namespace: NsTest
+    DependsOn: CodeBuildTestProject

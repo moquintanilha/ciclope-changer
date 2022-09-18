@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ciclope-chatops
+  name: ciclope-chatops
+  namespace: ciclope
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ciclope-chatops
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ciclope-chatops
+    spec:
+      containers:
+      - name: ciclope-chatops
+        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-chatops-build-ecr:ciclope-chatops-1.0.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m" 
+        ports:
+        - name: http
+          containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health-check
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 60
+        env:
+          - name: API_VERSION
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-chatops-config
+                key: API_VERSION
+          - name: FULL_SLACK_URL
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-chatops-config
+                key: FULL_SLACK_URL
