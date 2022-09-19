@@ -3,24 +3,24 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: ciclope-chatops
-  name: ciclope-chatops
+    app: ciclope-changer
+  name: ciclope-changer
   namespace: ciclope
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: ciclope-chatops
+      app: ciclope-changer
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: ciclope-chatops
+        app: ciclope-changer
     spec:
       containers:
-      - name: ciclope-chatops
-        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-chatops-build-ecr:ciclope-chatops-1.0.0
+      - name: ciclope-changer
+        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-1.0.0
         imagePullPolicy: Always
         resources:
           requests:
@@ -39,13 +39,8 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 60
         env:
-          - name: API_VERSION
+          - name: CHATOPS_URL
             valueFrom:
               configMapKeyRef:
-                name: ciclope-chatops-config
-                key: API_VERSION
-          - name: FULL_SLACK_URL
-            valueFrom:
-              configMapKeyRef:
-                name: ciclope-chatops-config
-                key: FULL_SLACK_URL
+                name: ciclope-changer-config
+                key: CHATOPS_URL
