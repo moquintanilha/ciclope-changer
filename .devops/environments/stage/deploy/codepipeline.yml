@@ -1,0 +1,369 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Deploy/Release pipeline creation
+
+Parameters:
+
+  EksClusterName:
+    Type: String
+    Description: The name of the EKS cluster created
+    Default: k8s-cluster01-staging
+    MinLength: 1
+    MaxLength: 100
+    ConstraintDescription: You must enter the EKS cluster name
+
+  # TODO: Update this to final repo name
+  GitOwner:
+    Type: String
+    Description: GitHub owner repository - must contain a Dockerfile and buildspec.yml in the base
+    Default: moquintanilha
+    MinLength: 1
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub repository name
+
+  GitSourceRepo:
+    Type: String
+    Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
+    Default: ciclope-changer
+    MinLength: 1
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub repository name
+
+  GitBranch:
+    Type: String
+    Default: staging
+    Description: GitHub git repository branch - change triggers a new build
+    ConstraintDescription: You must enter a GitHub repository branch name
+
+  GitHubToken:
+    Type: String
+    NoEcho: true
+    Description: GitHub API token - see https://github.com/blog/1509-personal-api-tokens
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub personal access token
+
+  GitHubUser:
+    Type: String
+    Description: GitHub username or organization
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a GitHub username or organization
+
+  CodeBuildDockerImage:
+    Type: String
+    Default: aws/codebuild/standard:6.0
+    Description: Default AWS CodeBuild Docker optimized image
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a CodeBuild Docker image
+
+  KubectlRoleName:
+    Type: String
+    Default: instance-eksctl-stg
+    Description: IAM role used by kubectl to interact with EKS cluster
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a kubectl IAM role
+
+  ApplicationName:
+    Type: String
+    Description: Nombre de aplicacion
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Nombre de la aplicacion
+
+  NameSpaceName:
+    Type: String
+    Description: Nombre de k8s namespace
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Nombre de k8s namespace
+
+  ApplicationScope:
+    Type: String
+    Description: Ambiente
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Ambiente
+
+  BuildSpecPath:
+    Type: String
+    Default: .devops/environments/stage/deploy/deployspec.yml
+    Description: Custom Path buildspec.yml
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: CODEBUILD_SRC_DIR
+  
+  ChatOpsUrl:
+    Type: String
+    Description: Full slack url
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Full slack url
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: GitHub
+        Parameters:
+          - GitHubUser
+          - GitHubToken
+          - GitSourceRepo
+          - GitBranch
+      - Label:
+          default: CodeBuild
+        Parameters:
+          - CodeBuildDockerImage
+      - Label:
+          default: IAM
+        Parameters:
+          - KubectlRoleName
+      - Label:
+          default: EKS
+        Parameters:
+          - EksClusterName
+    ParameterLabels:
+      GitHubUser:
+        default: Username
+      GitHubToken:
+        default: Access token
+      GitSourceRepo:
+        default: Repository
+      GitBranch:
+        default: Branch
+      CodeBuildDockerImage:
+        default: Docker image
+      KubectlRoleName:
+        default: kubectl IAM role
+      EksClusterName:
+        default: EKS cluster name
+      ChatOpsUrl:
+        default: Full chatops url
+
+Resources:
+
+
+  CodePipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub
+        - k8s-${STACK_NAME}-artifacts-store
+        - { STACK_NAME: !Ref AWS::StackName }
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub
+        - CodePipeline-ServiceRole-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: codepipeline-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:UploadArchive
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:CancelUploadArchive
+                  - iam:PassRole
+                  - lambda:InvokeFunction
+              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub
+        - CodeBuild-ServiceRole-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: '*'
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: codebuild-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+              - Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${KubectlRoleName}
+                Effect: Allow
+                Action:
+                  - sts:AssumeRole
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - eks:Describe*
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - codebuild:CreateReportGroup
+                  - codebuild:CreateReport
+                  - codebuild:UpdateReport
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchCheckLayerAvailability
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeDhcpOptions
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeVpcs
+                  - ec2:CreateNetworkInterfacePermission
+              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/k8s-ciclope-chatops-build-ecr
+                Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+
+  CodeBuildDeployProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Ref BuildSpecPath
+      VpcConfig:
+        VpcId: vpc-facd049c
+        Subnets:
+          - subnet-07f31ecee4ad38a4a
+        SecurityGroupIds:
+          - sg-0beacb292f6270bef
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        PrivilegedMode: true
+        Type: LINUX_CONTAINER
+        Image: !Ref CodeBuildDockerImage
+        EnvironmentVariables:
+          - Name: REPOSITORY_URI
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/k8s-ciclope-chatops-build-ecr
+          - Name: REPOSITORY_NAME
+            Value: !Ref GitSourceRepo
+          - Name: REPOSITORY_BRANCH
+            Value: !Ref GitBranch
+          - Name: EKS_CLUSTER_NAME
+            Value: !Ref EksClusterName
+          - Name: EKS_KUBECTL_ROLE_ARN
+            Value: !Sub arn:aws:iam::${AWS::AccountId}:role/${KubectlRoleName}
+          - Name: APPLICATION_NAME
+            Value: !Ref ApplicationName
+          - Name: APPLICATION
+            Value: !Ref ApplicationName
+          - Name: APPLICATION_SCOPE
+            Value: !Ref ApplicationScope
+          - Name: SCOPE
+            Value: !Ref ApplicationScope
+          - Name: K8S_NAMESPACE
+            Value: !Ref NameSpaceName
+          - Name: CHATOPS_URL
+            Value: !Ref ChatOpsUrl
+
+      Name: !Sub
+        - Deploy-${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub
+        - ${STACK_NAME}
+        - { STACK_NAME: !Ref AWS::StackName }
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref CodePipelineArtifactBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHubSource
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitOwner
+                Repo: !Ref GitSourceRepo
+                Branch: !Ref GitBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: GitHubCode
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildDeployProject
+              InputArtifacts:
+                - Name: GitHubCode
+              OutputArtifacts:
+                - Name: BuildOutput
+              RunOrder: 1
+              Namespace: NsDeploy
+    DependsOn: CodeBuildDeployProject
