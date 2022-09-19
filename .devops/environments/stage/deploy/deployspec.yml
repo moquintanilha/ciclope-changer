@@ -15,7 +15,7 @@ phases:
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - unzip awscliv2.zip > /dev/null
       - ./aws/install --update
-      - CREDENTIALS=$(aws sts assume-role --role-arn ${EKS_KUBECTL_ROLE_ARN} --role-session-name ciclope-chatops --duration-seconds 900)
+      - CREDENTIALS=$(aws sts assume-role --role-arn ${EKS_KUBECTL_ROLE_ARN} --role-session-name ciclope-changer --duration-seconds 900)
       - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
       - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
       - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
@@ -33,5 +33,6 @@ phases:
       - echo "OVERRIDE EKS_KUBECTL_ROLE_ARN now is $EKS_KUBECTL_ROLE_ARN"
       - aws eks --region us-east-1 update-kubeconfig --name $EKS_CLUSTER_NAME
       - kubectl apply -f .devops/environments/stage/deploy/k8s/namespace.yaml
+      - kubectl apply -f .devops/environments/stage/deploy/k8s/configmap.yaml
       - kubectl apply -f .devops/environments/stage/deploy/k8s/deployment.yaml
       - kubectl apply -f .devops/environments/stage/deploy/k8s/service.yaml

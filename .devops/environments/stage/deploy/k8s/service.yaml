@@ -3,8 +3,8 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: ciclope-chatops
-  name: ciclope-chatops
+    app: ciclope-changer
+  name: ciclope-changer
   namespace: ciclope
 spec:
   ports:
@@ -13,7 +13,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: ciclope-chatops
+    app: ciclope-changer
   type: ClusterIP
 status:
   loadBalancer: {}
