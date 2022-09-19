@@ -25,7 +25,7 @@ Parameters:
   GitSourceRepo:
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
-    Default: ciclope-chatops
+    Default: ciclope-changer
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
@@ -96,7 +96,7 @@ Parameters:
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
   
-  FullSlackUrl:
+  ChatOpsUrl:
     Type: String
     Description: Full slack url
     MinLength: 3
@@ -140,8 +140,8 @@ Metadata:
         default: kubectl IAM role
       EksClusterName:
         default: EKS cluster name
-      FullSlackUrl:
-        default: Full slack url
+      ChatOpsUrl:
+        default: Full chatops url
 
 Resources:
 
@@ -314,8 +314,8 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: K8S_NAMESPACE
             Value: !Ref NameSpaceName
-          - Name: FULL_SLACK_URL
-            Value: !Ref FullSlackUrl
+          - Name: CHATOPS_URL
+            Value: !Ref ChatOpsUrl
 
       Name: !Sub
         - Deploy-${STACK_NAME}
