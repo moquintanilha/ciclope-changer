@@ -22,10 +22,8 @@
   "dependencies": {
     "axios": "^0.27.2",
     "cors": "^2.8.5",
-    "dns": "^0.2.2",
     "dotenv": "^16.0.1",
     "express": "^4.17.1",
-    "newrelic": "~7.1.0",
     "winston": "^3.8.1"
   },
   "devDependencies": {
