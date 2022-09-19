@@ -2,4 +2,5 @@
 .devops/
 *.hmtl
 node_modules/
+package-lock.json
 jest-html-reporters-attach/
