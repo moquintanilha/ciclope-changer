@@ -28,7 +28,7 @@ app.get('/health-check', function (req, res) {
 });
 
 
-require('./app/routers/bando.routes.js')(app)
+require('./app/routers/ciclople.changer.routers.js')(app)
 /* istanbul ignore if */
 if (!module.parent) {
   const server = app.listen(8080, function () {

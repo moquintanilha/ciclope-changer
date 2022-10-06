@@ -1,0 +1,24 @@
+name: Tag Version
+on:
+  pull_request:
+    types:
+      - closed
+jobs:
+  tag-version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready."
+      - name: Version
+        id: version
+        uses: juliansangillo/tag-version@v1
+        with:
+          production-branch: master
+          test-branch: staging
+          dev-branch: develop
+
