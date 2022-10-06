@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:unit",
-    "test:unit": "configFileName=.env checksumEnabled=false NODE_ENV=test jest --config jest.config.js --coverage",
+    "test:unit": "configFileName=tests/config/application.properties checksumEnabled=false NODE_ENV=test jest --config jest.config.js --coverage",
     "start": "node ./index.js",
     "dev": "nodemon ./index.js",
     "debug": "nodemon --inspect --inspect-brk ./index.js"
