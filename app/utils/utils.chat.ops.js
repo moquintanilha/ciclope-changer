@@ -2,23 +2,23 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config();
 
-function sendMsg(host, vpnAlternate){
-  var data = JSON.stringify({
-    "host": `${host}`,
+function sendMsg(vpnName, vpnAlternate){
+  const data = JSON.stringify({
+    "host": `${vpnName}`,
     "vpnAlternate": `${vpnAlternate}`
   });
 
-  var config = {
+  const config = {
     method: 'post',
     url: `${process.env.CHATOPS_HOST}`,
-    headers: { 
+    headers: {
       'Content-Type': 'application/json'
-  },
-  data : data
+    },
+    data: data
 
-};
+  };
 
-axios(config)
+  axios(config)
 .then(function (response) {
   console.log(JSON.stringify(response.data));
 })
