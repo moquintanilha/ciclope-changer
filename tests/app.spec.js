@@ -15,7 +15,8 @@ describe('Test integration with ciclope-chatops', () => {
                 {
                     vpnName: 'Conductor',
                     recordId: '998788de-f118-11ec-a7e6-1680a1ffe1fd',
-                    vpnAlternate: 'vpn-pico-a.example.com.br',
+                    vpnAlternate: 'vpn-pico-a.partner.example.com.br',
+                    subDomain: 'partner.example.com.br',
                     requester: 'conductor-app',
                     description: 'This a request test.'
                 })
