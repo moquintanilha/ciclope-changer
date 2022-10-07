@@ -1,14 +1,23 @@
-# Changer
+# Ciclope-Changer
+![img.png](assets/img.png)
+> Ciclope is an initiative of Mercado Libre infrastructure team composed of an ecosystem of microservices that together provide a software mechanism capable of switching network traffic from the main VPN to an alternative VPN.
+> Cyclops Changer is a webhook responsible for receiving a request and sending a DNS record change request to the CDC service.
 
-> Brief project description
+## Flow
+![img.png](assets/flow-img.png)
 
-## Usage
+## Develop Guide
+The most important premise of this project is to be a continuous beta, so your contribution is very welcome.
 
-1. Set your application name in `package.json` located in the project's root. 
+1. Branch Strategy
+![img.png](assets/branch-strategy-img.png)
 
-3. Add a "test:unit" script to your package.json file that runs your tests and generates a code coverage report.
+2. CI/CD Process
+![img.png](assets/pipelines-img.png)
 
-4. Start coding!
+## Contributions
+
+To contribute and report problems is very easy, just follow this [Doc](https://github.com/moquintanilha/ciclope-changer/blob/main/docs/contribution/README.md)
 
 ## License
 
