@@ -24,3 +24,8 @@ jobs:
         run: npm install
       - name: Run test
         run: npm test
+      - name: Report
+        uses: vebr/jest-lcov-reporter@v0.2.1
+        with:
+          github-token: ${{ secrets.CICLOPE_CI }}
+          lcov-file: coverage/lcov.info
