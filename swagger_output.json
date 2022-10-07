@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v0.0.1-staging.3",
+    "version": "v0.0.1-staging.4",
     "title": "Ciclope Changer",
     "description": "<b>Ciclope-Changer</b> Service API Documentation"
   },
