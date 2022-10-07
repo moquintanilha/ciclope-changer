@@ -10,7 +10,9 @@ jobs:
     steps:
       - name: Version
         id: version
-        uses: Actions-R-Us/actions-tagger@v2.0.2
+        uses: IIlyichev/github-tag-action@v6.3
         with:
-          token: ${{ secrets.CICLOPE_CI }}
+          github_token: ${{ secrets.CICLOPE_CI }}
+          release_branches: master
+          pre_release_branches: develop,staging
 
