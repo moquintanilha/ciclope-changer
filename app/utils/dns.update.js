@@ -4,23 +4,23 @@ dotenv.config();
 
 
 
-function dnsUpdate(rrset, content) {
+function dnsUpdate(recordId, vpnAlternate, subDomain, description, requester) {
     let data = JSON.stringify({
-      "ttl": null,
-      "record_type": "CNAME",
-      "description": "VPN switching",
-      "requester": "ciclope-changer",
+      "ttl": `${process.env.TTL}`,
+      "record_type": `${process.env.RECORD_TYPE}`,
+      "description": `${description}`,
+      "requester": `${requester}`,
       "destination": {
-        "value": `${content}`,
-        "type": "DEVICE"
+        "value": `${vpnAlternate}`,
+        "type": `${process.env.TYPE}`
       },
       "status": "TO_UPDATE",
-      "provider_name": "Amazon-Fury_Core"
+      "provider_name": `${process.env.PROVIDER_NAME}`
     });
       
       let config = {
         method: 'patch',
-        url: `https://pdc.furycloud.io/domains/mercadolibre.io/records/${rrset}`,
+        url: `https://${process.env.CDC_HOST}/domains/${process.env.DOMAIN}/subdomains/${subDomain}/records/${recordId}`,
         headers: { 
           'x-auth-token': `${process.env.CDC_API_KEY}`, 
           'Content-Type': 'application/json',
