@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v0.0.1-staging.4",
+    "version": "v0.0.1-staging.5",
     "title": "Ciclope Changer",
     "description": "<b>Ciclope-Changer</b> Service API Documentation"
   },
-  "host": "localhost:8000",
+  "host": "localhost",
   "basePath": "/",
   "schemes": [
     "http"
