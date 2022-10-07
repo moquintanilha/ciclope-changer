@@ -47,35 +47,35 @@ spec:
                 name: ciclope-changer-config
                 key: CHATOPS_URL
           - name: CDC_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: ciclope-changer-config
-                  key: CDC_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-changer-config
+                key: CDC_HOST
           - name: DOMAIN
-              valueFrom:
-                configMapKeyRef:
-                  name: ciclope-changer-config
-                  key: DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-changer-config
+                key: DOMAIN
           - name: TTL
-              valueFrom:
-                configMapKeyRef:
-                  name: ciclope-changer-config
-                  key: TTL
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-changer-config
+                key: TTL
           - name: RECORD_TYPE
-              valueFrom:
-                configMapKeyRef:
-                  name: ciclope-changer-config
-                  key: RECORD_TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-changer-config
+                key: RECORD_TYPE
           - name: TYPE
-              valueFrom:
-                configMapKeyRef:
-                  name: ciclope-changer-config
-                  key: TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-changer-config
+                key: TYPE
           - name: PROVIDER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: ciclope-changer-config
-                  key: PROVIDER_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: ciclope-changer-config
+                key: PROVIDER_NAME
 
 
 
