@@ -13,6 +13,6 @@ jobs:
         uses: IIlyichev/github-tag-action@v6.3
         with:
           github_token: ${{ secrets.CICLOPE_CI }}
-          release_branches: master
+          release_branches: main
           pre_release_branches: develop,staging
 
