@@ -20,6 +20,22 @@ It is worth remembering that this model is not written in stone, and suggestions
 
 ![img.png](assets/pipelines-img.png)
 
+**3. Local Test**
+
+If you want to test this project locally, follow these steps:
+
+**3.1 Build image**
+
+```bash
+docker build -t ciclope-changer:demo .
+```
+
+**3.2 Launch container**
+
+```bash
+docker run -p 80:8080 -p 8000:3000 ciclope-changer:demo
+```
+
 ## Contributions
 
 To contribute and report problems is very easy, just follow this [Doc](https://github.com/moquintanilha/ciclope-changer/blob/main/docs/contribution/README.md)
