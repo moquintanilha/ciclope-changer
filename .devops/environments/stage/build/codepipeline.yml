@@ -108,6 +108,13 @@ Resources:
       RepositoryName: !Sub
         - k8s-${STACK_NAME}-ecr
         - { STACK_NAME: !Ref AWS::StackName }
+  CodePipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub
+        - k8s-${STACK_NAME}-artifacts-store
+        - { STACK_NAME: !Ref AWS::StackName }
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -139,6 +146,13 @@ Resources:
                   - codecommit:CancelUploadArchive
                   - iam:PassRole
                   - lambda:InvokeFunction
+              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
     DependsOn: EcrDockerRepository
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
@@ -197,6 +211,12 @@ Resources:
                   - ec2:DescribeSecurityGroups
                   - ec2:DescribeVpcs
                   - ec2:CreateNetworkInterfacePermission
+              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
               - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${EcrDockerRepository}
                 Effect: Allow
                 Action:
@@ -294,6 +314,9 @@ Resources:
         - ${STACK_NAME}
         - { STACK_NAME: !Ref AWS::StackName }
       RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref CodePipelineArtifactBucket
       Stages:
         - Name: Source
           Actions:
