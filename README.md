@@ -13,9 +13,11 @@ The most important premise of this project is to be a continuous beta, so your c
 
 In our project we chose to use the Gitlab **Flow strategy**, with a change in the name of the pre-production (staging) and production (main) branches.
 It is worth remembering that this model is not written in stone, and suggestions are welcome.
+
 ![img.png](assets/branch-strategy-img.png)
 
 **2. CI/CD Process**
+
 ![img.png](assets/pipelines-img.png)
 
 ## Contributions
