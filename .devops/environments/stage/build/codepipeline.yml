@@ -1,11 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
-
 Description: Build pipeline creation
-
 Parameters:
-
-  # TODO: Update this to final repo name
   GitOwner:
     Type: String
     Description: GitHub owner repository - must contain a Dockerfile and buildspec.yml in the base
@@ -13,7 +9,6 @@ Parameters:
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
-
   GitSourceRepo:
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
@@ -21,13 +16,11 @@ Parameters:
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
-
   GitBranch:
     Type: String
     Default: develop
     Description: GitHub git repository branch - change triggers a new build
     ConstraintDescription: You must enter a GitHub repository branch name
-
   GitHubToken:
     Type: String
     NoEcho: true
@@ -35,14 +28,12 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub personal access token
-
   GitHubUser:
     Type: String
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub username or organization
-
   CodeBuildDockerImage:
     Type: String
     Default: aws/codebuild/standard:6.0
@@ -50,21 +41,18 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a CodeBuild Docker image
-
   ApplicationName:
     Type: String
     Description: Nombre de aplicacion
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: Nombre de la aplicacion
-
   ApplicationScope:
     Type: String
     Description: Ambiente
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: Ambiente
-
   BuildSpecPath:
     Type: String
     Default: .devops/environments/stage/build/buildspec.yml
@@ -72,7 +60,6 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
-
   BuildSpecPathTest:
     Type: String
     Default: .devops/environments/stage/build/testspec.yml
@@ -80,14 +67,12 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
-  
   ChatOpsUrl:
     Type: String
     Description: Full slack url
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: Full slack url
-
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -115,7 +100,6 @@ Metadata:
         default: Docker image
       ChatOpsUrl:
         default: Full chatops url
-
 Resources:
   EcrDockerRepository:
     Type: AWS::ECR::Repository
@@ -124,15 +108,6 @@ Resources:
       RepositoryName: !Sub
         - k8s-${STACK_NAME}-ecr
         - { STACK_NAME: !Ref AWS::StackName }
-
-  CodePipelineArtifactBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    Properties:
-      BucketName: !Sub
-        - k8s-${STACK_NAME}-artifacts-store
-        - { STACK_NAME: !Ref AWS::StackName }
-
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -164,15 +139,7 @@ Resources:
                   - codecommit:CancelUploadArchive
                   - iam:PassRole
                   - lambda:InvokeFunction
-              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
-                Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                  - s3:GetBucketVersioning
     DependsOn: EcrDockerRepository
-
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -230,18 +197,6 @@ Resources:
                   - ec2:DescribeSecurityGroups
                   - ec2:DescribeVpcs
                   - ec2:CreateNetworkInterfacePermission
-              - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:GetObjectVersion
-              - Resource: '*'
-                Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:GetObjectVersion
               - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${EcrDockerRepository}
                 Effect: Allow
                 Action:
@@ -252,7 +207,6 @@ Resources:
                   - ecr:InitiateLayerUpload
                   - ecr:UploadLayerPart
                   - ecr:CompleteLayerUpload
-
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -289,12 +243,10 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: CHATOPS_URL
             Value: !Ref ChatOpsUrl
-
       Name: !Sub
         - Build-${STACK_NAME}
         - { STACK_NAME: !Ref AWS::StackName }
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-    
   CodeBuildTestProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -331,12 +283,10 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: CHATOPS_URL
             Value: !Ref ChatOpsUrl
-
       Name: !Sub
         - BuildTest-${STACK_NAME}
         - { STACK_NAME: !Ref AWS::StackName }
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-  
   CodePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -344,9 +294,6 @@ Resources:
         - ${STACK_NAME}
         - { STACK_NAME: !Ref AWS::StackName }
       RoleArn: !GetAtt CodePipelineServiceRole.Arn
-      ArtifactStore:
-        Type: S3
-        Location: !Ref CodePipelineArtifactBucket
       Stages:
         - Name: Source
           Actions:
@@ -364,22 +311,6 @@ Resources:
               OutputArtifacts:
                 - Name: GitHubCode
               RunOrder: 1
-        - Name: Build
-          Actions:
-            - Name: Build
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref CodeBuildProject
-              InputArtifacts:
-                - Name: GitHubCode
-              OutputArtifacts:
-                - Name: BuildOutput
-              RunOrder: 2
-              Namespace: NsBuildStage
         - Name: Test
           Actions:
             - Name: Test
@@ -396,4 +327,20 @@ Resources:
                 - Name: TestOutput
               RunOrder: 3
               Namespace: NsTest
-    DependsOn: CodeBuildTestProject
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: GitHubCode
+              OutputArtifacts:
+                - Name: BuildOutput
+              RunOrder: 2
+              Namespace: NsBuildStage
+    DependsOn: CodeBuildProject
