@@ -40,7 +40,7 @@ docker run -p 80:8080 -p 8000:3000 ciclope-changer:demo
 
 ## Contributions
 
-To contribute and report problems is very easy, just follow this [Doc](https://github.com/moquintanilha/ciclope-changer/blob/main/docs/contribution/README.md)
+To contribute and report problems is very easy, just follow this [Doc](docs/contribution/README.md)
 
 ## License
 
