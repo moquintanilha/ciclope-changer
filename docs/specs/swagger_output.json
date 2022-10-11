@@ -1,28 +1,25 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.1",
   "info": {
-    "version": "v0.0.1-staging.5",
+    "version": "v0.0.1-staging",
     "title": "Ciclope Changer",
-    "description": "<b>Ciclope-Changer</b> Service API Documentation"
+    "description": "<b>Ciclope-Changer</b> Service API Documentation",
+    "contact": {
+      "name": "Infrastructure Team",
+      "email": "infraestructura@mercadolibre.com"
+    }
   },
-  "host": "localhost",
-  "basePath": "/",
-  "schemes": [
-    "http"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "servers": [{
+    "url": "http://ciclope-staging.management-pci.com",
+    "description": "Staging scope"
+  }],
   "paths": {
     "/health-check": {
       "get": {
         "description": "Health check endpoint.",
         "responses": {
           "200": {
-            "description": "OK - {'message': 'UP'}"
+            "description": "OK"
           }
         }
       }
