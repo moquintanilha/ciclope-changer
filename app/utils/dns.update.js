@@ -1,10 +1,19 @@
 const axios = require('axios');
 const dotenv = require('dotenv');
+const chatOps = require('../utils/utils.chat.ops.js')
 dotenv.config();
 
 
 
-function dnsUpdate(recordId, vpnAlternate, subDomain, description, requester) {
+function dnsUpdate(vpnName, requester, description) {
+    if (vpnName === 'conductor'){
+      var subDomain = `${process.env.CONDUCTOR_SUBDOMAIN}`
+      var recordId = `${process.env.CODUCTOR_RECORD_ID}`
+      let string = JSON.stringify(`${process.env.VPN_CONDUCTOR_ALTERNATE}`)
+      let alternateHosts = JSON.parse("[" + string + "]")
+      let alternateHostsParser = alternateHosts[0].split(',')
+      var vpnAlternate = alternateHostsParser[Math.floor(Math.random() * alternateHostsParser.length)]
+    }
     let data = JSON.stringify({
       "ttl": `${process.env.TTL}`,
       "record_type": `${process.env.RECORD_TYPE}`,
@@ -36,6 +45,7 @@ function dnsUpdate(recordId, vpnAlternate, subDomain, description, requester) {
       .catch(function (error) {
         console.log(error);
       });
+      chatOps(vpnName, vpnAlternate)
 }
 
 module.exports = dnsUpdate;
