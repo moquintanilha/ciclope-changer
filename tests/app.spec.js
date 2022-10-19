@@ -13,10 +13,7 @@ describe('Test integration with ciclope-chatops', () => {
             .post('/api/action')
             .send(
                 {
-                    vpnName: 'Conductor',
-                    recordId: '998788de-f118-11ec-a7e6-1680a1ffe1fd',
-                    vpnAlternate: 'vpn-pico-a.partner.example.com.br',
-                    subDomain: 'partner.example.com.br',
+                    vpnName: 'conductor',
                     requester: 'conductor-app',
                     description: 'This a request test.'
                 })
@@ -32,8 +29,7 @@ describe('Test integration with ciclope-chatops', () => {
             .post('/api/action')
             .send(
                 {
-                    recordId: null,
-                    vpnAlternate: null,
+                    vpnName: null,
                     requester: 'conductor-app',
                     description: 'This a request test.'
                 })
