@@ -16,6 +16,9 @@
   "paths": {
     "/health-check": {
       "get": {
+        "tags": [
+          "Health Check"
+        ],
         "description": "Health check endpoint.",
         "responses": {
           "200": {
@@ -26,6 +29,9 @@
     },
     "/api/action": {
       "patch": {
+        "tags": [
+          "Send Ticket"
+        ],
         "description": "Endpoint to change an FQDN associated with a VPN.",
         "parameters": [
           {
@@ -35,16 +41,7 @@
               "type": "object",
               "properties": {
                 "vpnName": {
-                  "example": "Conductor"
-                },
-                "recordId": {
-                  "example": "998788de-f118-11ec-a7e6-1680a1ffe1fd"
-                },
-                "vpnAlternate": {
-                  "example": "vpn-pico-a.partner.example.com.br"
-                },
-                "subDomain": {
-                  "example": "partner.example.com.br"
+                  "example": "conductor"
                 },
                 "requester": {
                   "example": "conductor-app"

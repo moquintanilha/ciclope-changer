@@ -36,7 +36,7 @@ docker build -t ciclope-changer:demo .
 docker run -p 80:8080 -p 8000:3000 ciclope-changer:demo
 ```
 
-> To test, just use this in your browser: `http://localhost/health-check` or `http://localhost/doc`
+> To test, just use this in your browser: `http://localhost/health-check` or `http://localhost/specs`
 
 ## Contributions
 
