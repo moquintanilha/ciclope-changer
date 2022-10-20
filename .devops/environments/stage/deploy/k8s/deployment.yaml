@@ -41,6 +41,16 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 60
         env:
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: ciclope-changer
+                key: CLIENT_ID
+          - name: SECRET
+            valueFrom:
+              secretKeyRef:
+                name: ciclope-changer
+                key: SECRET
           - name: CHATOPS_URL
             valueFrom:
               configMapKeyRef:
@@ -76,7 +86,26 @@ spec:
               configMapKeyRef:
                 name: ciclope-changer-config
                 key: PROVIDER_NAME
-
+          - name: TIGER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ciclope-changer-config
+                  key: TIGER_URL
+          - name: CONDUCTOR_SUBDOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: ciclope-changer-config
+                  key: CONDUCTOR_SUBDOMAIN
+          - name: CODUCTOR_RECORD_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: ciclope-changer-config
+                  key: CODUCTOR_RECORD_ID
+          - name: VPN_CONDUCTOR_ALTERNATE
+              valueFrom:
+                configMapKeyRef:
+                  name: ciclope-changer-config
+                  key: VPN_CONDUCTOR_ALTERNATE
 
 
 
