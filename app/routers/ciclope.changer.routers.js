@@ -1,8 +1,8 @@
 module.exports = app => {
-  const changer = require("../controllers/ciclope.changer.controllers.js");
-  let router = require("express").Router();
+  const changer = require("../controllers/ciclope.changer.controllers.js")
+  let router = require("express").Router()
 
-  router.patch("/", changer.registerUpdate);
+  router.patch("/", changer.registerUpdate)
   
-  app.use('/api/action', router);
-};
+  app.use('/api/action', router)
+}

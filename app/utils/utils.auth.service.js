@@ -2,15 +2,15 @@ const axios = require('axios')
 const dotenv = require('dotenv')
 dotenv.config()
 
-function sendMsg(vpnName, vpnAlternate){
+function getToken(clientId, secret){
   const data = JSON.stringify({
-    "host": `${vpnName}`,
-    "vpnAlternate": `${vpnAlternate}`
+    "client_id": `${clientId}`,
+    "secret": `${secret}`
   });
 
   const config = {
     method: 'post',
-    url: `${process.env.CHATOPS_HOST}`,
+    url: `${process.env.TIGER_URL}`,
     headers: {
       'Content-Type': 'application/json'
     },
@@ -30,4 +30,4 @@ function sendMsg(vpnName, vpnAlternate){
 
 
 
-module.exports = sendMsg
+module.exports = getToken
