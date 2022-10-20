@@ -7,6 +7,10 @@ data:
   RECORD_TYPE: CNAME
   TYPE: DEVICE
   PROVIDER_NAME: Amazon-Fury_Core
+  TIGER_URL: http://tiger.furycloud.io/login/credentials
+  CONDUCTOR_SUBDOMAIN: "null"
+  CODUCTOR_RECORD_ID: "null"
+  VPN_CONDUCTOR_ALTERNATE: "null"
 kind: ConfigMap
 metadata:
   creationTimestamp: null
