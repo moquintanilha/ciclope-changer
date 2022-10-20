@@ -1,6 +1,7 @@
 const axios = require('axios');
 const dotenv = require('dotenv');
 const chatOps = require('../utils/utils.chat.ops.js')
+const authService = require('../utils/utils.auth.service.js')
 dotenv.config();
 
 
@@ -25,13 +26,16 @@ function dnsUpdate(vpnName, requester, description) {
       },
       "status": "TO_UPDATE",
       "provider_name": `${process.env.PROVIDER_NAME}`
-    });
+    })
+      let clientId = `${process.env.CLIENT_ID}`
+      let secret = `${process.env.SECRET}`
+      let token = authService(clientId, secret)
       
       let config = {
         method: 'patch',
         url: `https://${process.env.CDC_HOST}/domains/${process.env.DOMAIN}/subdomains/${subDomain}/records/${recordId}`,
         headers: { 
-          'x-auth-token': `${process.env.CDC_API_KEY}`, 
+          'x-auth-token': token,
           'Content-Type': 'application/json',
           'cache-control': 'no-cache'
         },
