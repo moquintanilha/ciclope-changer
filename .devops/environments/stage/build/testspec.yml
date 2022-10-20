@@ -7,4 +7,3 @@ phases:
       - echo "Start functional tests."
       - npm cache clean --force
       - npm cache verify
-      - npm test
