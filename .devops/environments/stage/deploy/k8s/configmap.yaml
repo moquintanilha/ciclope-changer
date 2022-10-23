@@ -7,7 +7,7 @@ data:
   CONDUCTOR_RECORD_TYPE: "A"
   CONDUCTOR_DESCRIPTION: "Conductor"
   FQDN_CONDUCTOR: conductor-stg-in-cloudexchange.mercadolibre.io
-  PROVIDER_NAME: Amazon-Fury_Core
+  CONDUCTOR_PROVIDER_NAME: Amazon-Fury_Core
 kind: ConfigMap
 metadata:
   creationTimestamp: null

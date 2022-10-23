@@ -18,10 +18,17 @@ spec:
       labels:
         app: changer
     spec:
+      volumes:
+        - name: changer-config
+          configMap:
+              name: changer-config
       containers:
       - name: changer
         image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-0.1.0
         imagePullPolicy: Always
+        volumeMounts:
+          - name: .env
+            mountPath: "/opt/app"
         resources:
           requests:
             memory: "128Mi"
@@ -38,37 +45,7 @@ spec:
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 60
-        env:
-          - name: CHATOPS_URL
-            valueFrom:
-              configMapKeyRef:
-                name: changer-config
-                key: CHATOPS_URL
-          - name: CDC_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: changer-config
-                key: CDC_HOST
-          - name: DOMAIN
-            valueFrom:
-              configMapKeyRef:
-                name: changer-config
-                key: DOMAIN
-          - name: CONDUCTOR_RECORD_TTL
-            valueFrom:
-              configMapKeyRef:
-                name: changer-config
-                key: CONDUCTOR_RECORD_TTL
-          - name: CONDUCTOR_RECORD_TYPE
-            valueFrom:
-              configMapKeyRef:
-                name: changer-config
-                key: CONDUCTOR_RECORD_TYPE
-          - name: PROVIDER_NAME
-            valueFrom:
-              configMapKeyRef:
-                name: changer-config
-                key: PROVIDER_NAME
+
 
 
 
