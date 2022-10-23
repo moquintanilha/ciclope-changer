@@ -3,7 +3,7 @@ from fastapi import APIRouter
 router = APIRouter(
     prefix='/api',
     tags=['health-check'],
-    responses={404: {"description": "Not found"}},
+    responses={500: {"description": "Internal server error"}},
 )
 
 

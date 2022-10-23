@@ -10,27 +10,6 @@ cdc_host = os.environ.get('CDC_HOST')
 domain = os.environ.get('DOMAIN')
 
 
-def get_all_records(vpn_name: str, token: str):
-    if vpn_name == 'conductor':
-        fqdn = os.environ.get('FQDN_CONDUCTOR')
-        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
-
-        payload = {}
-        headers = {
-            'X-auth-token': token
-        }
-
-        response = requests.request(
-            'GET',
-            URL,
-            headers=headers,
-            data=payload
-        )
-
-        response_body = json.loads(response.text)
-        return response_body
-
-
 def get_vpn_alternate(vpn_name: str, token: str):
     if vpn_name == 'conductor':
         fqdn = os.environ.get('FQDN_CONDUCTOR')
