@@ -1,7 +1,7 @@
 from typing import Union
 from fastapi import APIRouter, Header, status, Depends
 from app.src.utils.mgmt_record import update_record
-from app.src.utils.verify_token import verify_token
+from app.src.exceptions.verify_token import verify_token
 
 router = APIRouter(
     prefix='/api',
