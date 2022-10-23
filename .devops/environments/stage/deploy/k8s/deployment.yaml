@@ -58,7 +58,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: changer-config
-                key: TTL
+                key: CONDUCTOR_RECORD_TTL
           - name: CONDUCTOR_RECORD_TYPE
             valueFrom:
               configMapKeyRef:
