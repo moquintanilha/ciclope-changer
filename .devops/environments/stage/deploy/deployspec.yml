@@ -5,13 +5,11 @@ phases:
   install:
     on-failure: ABORT
     runtime-versions:
-      nodejs: 16
+      python: 3.10
     commands:
-      - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install jq python3-pip python3-dev ca-certificates curl uuid-runtime
       - curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
       - echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
       - apt-get update && apt-get install -y kubectl
-      - python3 -m pip install --upgrade pip
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - unzip awscliv2.zip > /dev/null
       - ./aws/install --update
@@ -20,7 +18,7 @@ phases:
       - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
       - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
       - export AWS_EXPIRATION=$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')
-      - export VERSION=$(cat package.json | jq .version | sed 's/"//g')
+      - export VERSION=$(cat version.json | jq .version | sed 's/"//g')
       - echo "VERSION -> ${VERSION}"
       - echo "APPLICATION_NAME -> $APPLICATION_NAME"
       - echo "EKS_KUBECTL_ROLE_ARN -> $EKS_KUBECTL_ROLE_ARN"
