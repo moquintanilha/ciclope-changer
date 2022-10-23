@@ -4,14 +4,12 @@ phases:
   install:
     on-failure: ABORT
     runtime-versions:
-      nodejs: 16
+      python: 3.8
     commands:
-      - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install jq python3-pip python3-dev curl uuid-runtime
-      - python3 -m pip install --upgrade pip
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - unzip awscliv2.zip > /dev/null
       - ./aws/install --update
-      - export VERSION=$(cat package.json | jq .version | sed 's/"//g')
+      - export VERSION=$(cat version.json | jq .version | sed 's/"//g')
       - echo "VERSION -> ${VERSION}"
       - echo "APPLICATION_NAME -> $APPLICATION_NAME"
       - echo "REPOSITORY_URI -> $REPOSITORY_URI"
@@ -33,7 +31,7 @@ phases:
       - export APPLICATION_SCOPE
       - export APPLICATION
       - export APPLICATION_NAME
-      - docker build --build-arg CHATOPS_URL=${CHATOPS_URL} -t ${APPLICATION_NAME}:${VERSION} .
+      - docker build -t ${APPLICATION_NAME}:${VERSION} .
       - docker tag ${APPLICATION_NAME}:${VERSION} ${REPOSITORY_URI}:${APPLICATION_NAME}-${VERSION}
       - docker push ${REPOSITORY_URI}:${APPLICATION_NAME}-${VERSION}
       - echo "Build success!🚀🚀🚀"
