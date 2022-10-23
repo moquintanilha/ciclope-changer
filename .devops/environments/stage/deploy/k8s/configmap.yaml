@@ -3,9 +3,9 @@ data:
   CHATOPS_URL: http://ciclope-chatops.ciclope:7073/app/v1/send
   CDC_HOST: pdc.furycloud.io
   DOMAIN: mercadplibre.io
-  CONDUCTOR_RECORD_TTL: 60
-  CONDUCTOR_RECORD_TYPE: A
-  CONDUCTOR_DESCRIPTION: Conductor
+  CONDUCTOR_RECORD_TTL: "60"
+  CONDUCTOR_RECORD_TYPE: "A"
+  CONDUCTOR_DESCRIPTION: "Conductor"
   FQDN_CONDUCTOR: conductor-stg-in-cloudexchange.mercadolibre.io
   PROVIDER_NAME: Amazon-Fury_Core
 kind: ConfigMap
