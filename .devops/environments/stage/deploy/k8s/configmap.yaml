@@ -11,5 +11,5 @@ data:
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: ciclope-changer-config
+  name: changer-config
   namespace: ciclope

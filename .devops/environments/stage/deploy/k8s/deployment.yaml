@@ -42,32 +42,32 @@ spec:
           - name: CHATOPS_URL
             valueFrom:
               configMapKeyRef:
-                name: ciclope-changer-config
+                name: changer-config
                 key: CHATOPS_URL
           - name: CDC_HOST
             valueFrom:
               configMapKeyRef:
-                name: ciclope-changer-config
+                name: changer-config
                 key: CDC_HOST
           - name: DOMAIN
             valueFrom:
               configMapKeyRef:
-                name: ciclope-changer-config
+                name: changer-config
                 key: DOMAIN
           - name: CONDUCTOR_RECORD_TTL
             valueFrom:
               configMapKeyRef:
-                name: ciclope-changer-config
+                name: changer-config
                 key: TTL
           - name: CONDUCTOR_RECORD_TYPE
             valueFrom:
               configMapKeyRef:
-                name: ciclope-changer-config
+                name: changer-config
                 key: CONDUCTOR_RECORD_TYPE
           - name: PROVIDER_NAME
             valueFrom:
               configMapKeyRef:
-                name: ciclope-changer-config
+                name: changer-config
                 key: PROVIDER_NAME
 
 
