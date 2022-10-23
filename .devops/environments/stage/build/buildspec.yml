@@ -9,7 +9,7 @@ phases:
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - unzip awscliv2.zip > /dev/null
       - ./aws/install --update
-      - export VERSION=$(cat package.json | jq .version | sed 's/"//g')
+      - export VERSION=$(cat version.json | jq .version | sed 's/"//g')
       - echo "VERSION -> ${VERSION}"
       - echo "APPLICATION_NAME -> $APPLICATION_NAME"
       - echo "REPOSITORY_URI -> $REPOSITORY_URI"
