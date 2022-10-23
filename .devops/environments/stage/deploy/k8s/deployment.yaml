@@ -29,6 +29,7 @@ spec:
         volumeMounts:
           - name: changer-config
             mountPath: "/opt/app/.env"
+            subPath: ".env"
         resources:
           requests:
             memory: "128Mi"
