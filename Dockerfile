@@ -1,8 +1,6 @@
-ARG CHATOPS_HOST 
-FROM node:16
-WORKDIR /app
-ENV CHATOPS_HOST=$CHATOPS_HOST
-COPY package.json ./
-RUN npm install
+FROM hub.furycloud.io/mercadolibre/python:3.8-mini
+WORKDIR /opt
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 COPY . .
-ENTRYPOINT [ "npm", "start" ]
+ENTRYPOINT [ "bash", "start.sh" ]

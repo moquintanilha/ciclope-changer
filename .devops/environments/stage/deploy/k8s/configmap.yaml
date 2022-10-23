@@ -3,16 +3,13 @@ data:
   CHATOPS_URL: http://ciclope-chatops.ciclope:7073/app/v1/send
   CDC_HOST: pdc.furycloud.io
   DOMAIN: mercadplibre.io
-  TTL: "null"
-  RECORD_TYPE: CNAME
-  TYPE: DEVICE
+  CONDUCTOR_RECORD_TTL: 60
+  CONDUCTOR_RECORD_TYPE: A
+  CONDUCTOR_DESCRIPTION: Conductor
+  FQDN_CONDUCTOR: conductor-stg-in-cloudexchange.mercadolibre.io
   PROVIDER_NAME: Amazon-Fury_Core
-  TIGER_URL: http://tiger.furycloud.io/login/credentials
-  CONDUCTOR_SUBDOMAIN: "null"
-  CODUCTOR_RECORD_ID: "null"
-  VPN_CONDUCTOR_ALTERNATE: "null"
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: ciclope-changer-config
+  name: changer-config
   namespace: ciclope

@@ -1,9 +1,12 @@
 ---
 version: 0.2
 phases:
-  install: 
+  install:
     on-failure: ABORT
+    runtime-versions:
+      python: 3.10
     commands:
-      - echo "Start functional tests."
-      - npm install
-      - npm test
+      - echo "Install dependencies."
+      - pip install -r requirements.txt
+      - echo "Start unit tests."
+      - pytest
