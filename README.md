@@ -33,10 +33,10 @@ docker build -t ciclope-changer:demo .
 **3.2 Launch container**
 
 ```bash
-docker run -p 80:8080 -p 8000:3000 ciclope-changer:demo
+docker run -p 80:8080 ciclope-changer:demo
 ```
 
-> To test, just use this in your browser: `http://localhost/health-check` or `http://localhost/specs`
+> To test, just use this in your browser: `http://localhost/health-check` or `http://localhost/docs`
 
 ## Contributions
 

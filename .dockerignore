@@ -1,7 +1,6 @@
 .env
-.devops/
-*.hmtl
-node_modules/
-package-lock.json
-jest-html-reporters-attach/
-.idea/
+.git/
+.pytest_cache/
+.DS_Store
+.idea
+Dockerfile
