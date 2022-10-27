@@ -49,17 +49,16 @@ If you want to test this project locally, follow these steps:
 
     docker run -p 80:8080 ciclope-changer:demo
 
-.. note::
-    To test the application, access the address in your browser of choice:
+To test the application, access the address in your browser of choice:
 
-    .. code-block:: ruby
+.. code-block:: ruby
 
-        http://localhost/health-check
-    To access API documentation:
+    http://localhost/health-check
+To access API documentation:
 
-    .. code-block:: ruby
+.. code-block:: ruby
 
-        http://localhost/docs.
+    http://localhost/docs.
 
 Contributions
 =============
