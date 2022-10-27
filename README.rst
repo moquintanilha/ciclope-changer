@@ -51,10 +51,12 @@ If you want to test this project locally, follow these steps:
 
 .. note::
     To test the application, access the address in your browser of choice:
+
     .. code-block:: ruby
 
         http://localhost/health-check
     To access API documentation:
+
     .. code-block:: ruby
 
         http://localhost/docs.
