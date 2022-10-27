@@ -1,4 +1,8 @@
-# Ciclope-Changer
+Ciclope-Changer
+==========================================
+.. image:: https://github.com/moquintanilha/ciclope-changer/workflows/CI/badge.svg
+    :target: https://github.com/moquintanilha/ciclope-changer/actions?workflow=CI
+
 ![img.png](assets/img.png)
 > Ciclope is an initiative of Mercado Libre infrastructure team composed of an ecosystem of microservices that together provide a software mechanism capable of switching network traffic from the main VPN to an alternative VPN.
 > Cyclops Changer is a webhook responsible for receiving a request and sending a DNS record change request to the CDC service.
