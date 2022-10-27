@@ -39,16 +39,19 @@ If you want to test this project locally, follow these steps:
 ===============
 
 .. code-block:: ruby
-docker build -t ciclope-changer:demo .
+
+    docker build -t ciclope-changer:demo .
 
 3.2 Launch container
 ====================
 
 .. code-block:: ruby
-docker run -p 80:8080 ciclope-changer:demo
+
+    docker run -p 80:8080 ciclope-changer:demo
 
 .. note::
-To test, just use this in your browser: http://localhost/health-check or http://localhost/docs
+
+    To test, just use this in your browser: http://localhost/health-check or http://localhost/docs
 
 Contributions
 =============
