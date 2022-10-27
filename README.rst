@@ -50,7 +50,7 @@ If you want to test this project locally, follow these steps:
     docker run -p 80:8080 ciclope-changer:demo
 
 .. note::
-    To test, just use this in your browser: http://localhost/health-check or http://localhost/docs
+   To test, just use this in your browser: http://localhost/health-check or http://localhost/docs.
 
 Contributions
 =============
