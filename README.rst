@@ -55,7 +55,7 @@ If you want to test this project locally, follow these steps:
 Contributions
 =============
 
-To contribute and report problems is very easy, just follow this .. _Docs: https://github.com/moquintanilha/ciclope-changer/tree/feat/chatops-integration/docs/contribution#readme
+To contribute and report problems is very easy, just follow this `Docs <https://github.com/moquintanilha/ciclope-changer/tree/feat/chatops-integration/docs/contribution#readme>`_
 
 License
 =======
