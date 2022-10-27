@@ -1,14 +1,17 @@
-name: Test CI
+name: CI
 
 on:
   pull_request:
     branches: [ "develop" ]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: App start
+        run: |
+          bash ${GITHUB_WORKSPACE}/start.sh &
       - name: Run test
         run: pytest
