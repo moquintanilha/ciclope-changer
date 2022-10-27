@@ -1,8 +1,8 @@
-Ciclope-Changer
-###############
-
 .. image:: https://github.com/moquintanilha/ciclope-changer/workflows/CI/badge.svg
     :target: https://github.com/moquintanilha/ciclope-changer/actions?workflow=CI
+
+Ciclope-Changer
+###############
 
 .. image:: assets/img.png
 
@@ -38,18 +38,16 @@ If you want to test this project locally, follow these steps:
 3.1 Build image
 ===============
 
-.. code-block:: python
+.. code-block:: ruby
 docker build -t ciclope-changer:demo .
-
 
 3.2 Launch container
 ====================
 
-.. code-block:: python
+.. code-block:: ruby
 docker run -p 80:8080 ciclope-changer:demo
 
 .. note::
-
 To test, just use this in your browser: http://localhost/health-check or http://localhost/docs
 
 Contributions
