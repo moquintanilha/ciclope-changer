@@ -50,13 +50,12 @@ If you want to test this project locally, follow these steps:
     docker run -p 80:8080 ciclope-changer:demo
 
 .. note::
-
     To test, just use this in your browser: http://localhost/health-check or http://localhost/docs
 
 Contributions
 =============
 
-To contribute and report problems is very easy, just follow this [Doc](docs/contribution/README.md)
+To contribute and report problems is very easy, just follow this .. _Docs: https://github.com/moquintanilha/ciclope-changer/tree/feat/chatops-integration/docs/contribution#readme
 
 License
 =======
