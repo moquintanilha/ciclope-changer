@@ -15,6 +15,6 @@ router = APIRouter(
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[Depends(verify_token)],
 )
-async def send_ticket(vpn_name: str, requester: str, x_auth_token: Union[str, None] = Header(default=None)):
+async def send_ticket(vpn_name: str, requester: str, x_auth_token: Union[str] = Header()):
     response_body = update_record(vpn_name, requester, x_auth_token)
     return response_body
