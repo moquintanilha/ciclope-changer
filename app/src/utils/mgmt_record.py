@@ -1,4 +1,5 @@
 from app.src.utils.get_attributes import get_record_id, get_vpn_alternate
+from app.src.utils.send_event import send_msg
 import json
 from dotenv import load_dotenv
 import requests
@@ -39,6 +40,6 @@ def update_record(vpn_name: str, requester: str, token: str):
             headers=headers,
             data=payload
         )
-
+        send_msg(vpn_name, vpn_alternate)
         response_body = json.loads(response.text)
         return response_body
