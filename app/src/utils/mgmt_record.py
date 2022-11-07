@@ -14,8 +14,8 @@ domain = os.environ.get('DOMAIN')
 def update_record(vpn_name: str, requester: str, token: str):
     if vpn_name == 'conductor':
         fqdn = os.environ.get('FQDN_CONDUCTOR')
-        record_id = get_record_id(vpn_name)
-        vpn_alternate = get_vpn_alternate(vpn_name)
+        record_id = get_record_id(vpn_name, token)
+        vpn_alternate = get_vpn_alternate(vpn_name, token)
         url = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records/' + record_id
 
         payload = {
