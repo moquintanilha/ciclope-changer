@@ -39,7 +39,7 @@ def get_vpn_alternate(vpn_name: str, token: str):
                 return vpn_alternate.ip
 
 
-def get_record_id(vpn_name: str, token: str):
+def get_record_alternate_id(vpn_name: str, token: str):
     if vpn_name == 'conductor':
         fqdn = os.environ.get('FQDN_CONDUCTOR')
         URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
@@ -60,9 +60,69 @@ def get_record_id(vpn_name: str, token: str):
 
         for i in range(0, len(response_body)):
             external_data = {
-                'id': response_body[i]['subdomain']['id']
+                'id': response_body[i]['id'],
+                'vpn_status': response_body[i]['health_status']['health_check_status']
             }
 
             vpn_alternate = VPNAttributes(**external_data)
+            if vpn_alternate.vpn_status is False:
+                return vpn_alternate.id
 
-        return vpn_alternate.id
+
+def get_vpn_location(vpn_name: str, token: str):
+    if vpn_name == 'conductor':
+        fqdn = os.environ.get('FQDN_CONDUCTOR')
+        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
+
+        payload = {}
+        headers = {
+            'X-auth-token': token
+        }
+
+        response = requests.request(
+            'GET',
+            URL,
+            headers=headers,
+            data=payload
+        )
+
+        response_body = json.loads(response.text)
+        for i in range(0, len(response_body)):
+            external_data = {
+                'ip': response_body[i]['destination']['device']['value'],
+                'vpn_status': response_body[i]['health_status']['health_check_status']
+            }
+
+            vpn_location = VPNAttributes(**external_data)
+            if vpn_location.vpn_status is True:
+                return vpn_location.ip
+
+
+def get_record_location_id(vpn_name: str, token: str):
+    if vpn_name == 'conductor':
+        fqdn = os.environ.get('FQDN_CONDUCTOR')
+        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
+
+        payload = {}
+        headers = {
+            'X-auth-token': token
+        }
+
+        response = requests.request(
+            'GET',
+            URL,
+            headers=headers,
+            data=payload
+        )
+
+        response_body = json.loads(response.text)
+
+        for i in range(0, len(response_body)):
+            external_data = {
+                'id': response_body[i]['id'],
+                'vpn_status': response_body[i]['health_status']['health_check_status']
+            }
+
+            vpn_location_id = VPNAttributes(**external_data)
+            if vpn_location_id.vpn_status is True:
+                return vpn_location_id.id

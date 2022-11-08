@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 router = APIRouter(
     prefix='/api',
-    tags=['health-check'],
+    tags=['Health Check'],
     responses={500: {"description": "Internal server error"}},
 )
 
