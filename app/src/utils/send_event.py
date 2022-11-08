@@ -1,4 +1,3 @@
-import json
 from dotenv import load_dotenv
 import requests
 import os
@@ -18,12 +17,9 @@ def send_msg(host: str, vpn_alternate: str):
 
     headers = {}
 
-    response = requests.request(
+    requests.request(
         'POST',
         url,
         headers=headers,
         data=payload
     )
-
-    response_body = json.loads(response.text)
-    return response_body
