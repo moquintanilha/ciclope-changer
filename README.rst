@@ -53,12 +53,12 @@ To test the application, access the address in your browser of choice:
 
 .. code-block:: ruby
 
-    http://localhost/health-check
+    http://localhost/api/health-check
 To access API documentation:
 
 .. code-block:: ruby
 
-    http://localhost/docs.
+    http://localhost/api/docs
 
 Contributions
 =============
