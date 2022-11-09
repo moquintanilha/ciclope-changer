@@ -33,7 +33,7 @@ def update_record_alternate(vpn_name: str, requester: str, token: str):
             'weight': os.environ.get('CONDUCTOR_RECORD_ON_TRAFFIC')
         }
         headers = {
-            'X-auth-token': token
+            'x-tiger-token': 'Bearer ' + token
         }
         request_body = json.dumps(payload, indent=4)
         response = requests.request(
@@ -42,7 +42,7 @@ def update_record_alternate(vpn_name: str, requester: str, token: str):
             headers=headers,
             data=request_body
         )
-        send_msg(fqdn, vpn_alternate)
+        # send_msg(fqdn, vpn_alternate)
         response_body = json.loads(response.text)
         return response_body
 
@@ -68,7 +68,7 @@ def update_record_location(vpn_name: str, requester: str, token: str):
             'weight': os.environ.get('CONDUCTOR_RECORD_OFF_TRAFFIC')
         }
         headers = {
-            'X-auth-token': token
+            'x-tiger-token': 'Bearer ' + token
         }
         request_body = json.dumps(payload, indent=4)
         response = requests.request(

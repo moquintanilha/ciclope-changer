@@ -17,7 +17,7 @@ def get_vpn_alternate(vpn_name: str, token: str):
 
         payload = {}
         headers = {
-            'X-auth-token': token
+            'x-tiger-token': 'Bearer ' + token
         }
 
         response = requests.request(
@@ -46,7 +46,7 @@ def get_record_alternate_id(vpn_name: str, token: str):
 
         payload = {}
         headers = {
-            'X-auth-token': token
+            'x-tiger-token': 'Bearer ' + token
         }
 
         response = requests.request(
@@ -76,7 +76,7 @@ def get_vpn_location(vpn_name: str, token: str):
 
         payload = {}
         headers = {
-            'X-auth-token': token
+            'x-tiger-token': 'Bearer ' + token
         }
 
         response = requests.request(
@@ -105,7 +105,7 @@ def get_record_location_id(vpn_name: str, token: str):
 
         payload = {}
         headers = {
-            'X-auth-token': token
+            'x-tiger-token': 'Bearer ' + token
         }
 
         response = requests.request(
