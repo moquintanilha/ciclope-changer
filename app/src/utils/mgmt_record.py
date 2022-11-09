@@ -42,7 +42,7 @@ def update_record_alternate(vpn_name: str, requester: str, token: str):
             headers=headers,
             data=request_body
         )
-        # send_msg(fqdn, vpn_alternate)
+        send_msg(fqdn, vpn_alternate)
         response_body = json.loads(response.text)
         return response_body
 
