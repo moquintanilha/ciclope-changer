@@ -1,6 +1,7 @@
 from app.src.utils.get_attributes import get_record_alternate_id, get_vpn_alternate, get_record_location_id, \
     get_vpn_location
 from app.src.utils.send_event import send_msg
+from app.src.utils.healthcheck_record import record_healthcheck
 import json
 from dotenv import load_dotenv
 import requests
@@ -42,7 +43,8 @@ def update_record_alternate(vpn_name: str, requester: str, token: str):
             headers=headers,
             data=request_body
         )
-        send_msg(fqdn, vpn_alternate)
+        record_healthcheck(alternate_record_id, token, fqdn)
+        # send_msg(fqdn, vpn_alternate)
         response_body = json.loads(response.text)
         return response_body
 
@@ -77,5 +79,6 @@ def update_record_location(vpn_name: str, requester: str, token: str):
             headers=headers,
             data=request_body
         )
+        record_healthcheck(location_record_id, token, fqdn)
         response_body = json.loads(response.text)
         return response_body
