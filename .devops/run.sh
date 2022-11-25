@@ -15,7 +15,7 @@ if [ $PIPELINE_TYPE == "deploy" ]
 then
     aws cloudformation deploy \
     --template ${PIPELINE_FILE_PATH} \
-    --stack-name ${APPNAME}-${PIPELINE_TYPE} \
+    --stack-name ${APPNAME}-${PIPELINE_TYPE}-${APPLICATION_SCOPE} \
     --region ${REGION} \
     --parameter-overrides \
     GitHubUser=${GITHUB_USER} \
