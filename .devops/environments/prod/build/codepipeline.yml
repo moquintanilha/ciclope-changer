@@ -106,7 +106,7 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       RepositoryName: !Sub
-        - k8s-${STACK_NAME}-${ApplicationScope}-ecr
+        - k8s-${STACK_NAME}-ecr
         - { STACK_NAME: !Ref AWS::StackName }
   CodePipelineArtifactBucket:
     Type: AWS::S3::Bucket
