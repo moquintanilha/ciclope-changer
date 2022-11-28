@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: changer
+  name: changer
+  namespace: ciclope
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: changer
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: changer
+    spec:
+      containers:
+      - name: changer
+        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-0.1.2
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m" 
+        ports:
+        - name: http
+          containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /api/health-check
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 60
+        env:
+          - name: CHATOPS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CHATOPS_URL
+          - name: CDC_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CDC_HOST
+          - name: DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: DOMAIN
+          - name: CONDUCTOR_RECORD_TTL
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CONDUCTOR_RECORD_TTL
+          - name: CONDUCTOR_RECORD_TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CONDUCTOR_RECORD_TYPE
+          - name: CONDUCTOR_DESCRIPTION
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CONDUCTOR_DESCRIPTION
+          - name: FQDN_CONDUCTOR
+              valueFrom:
+                configMapKeyRef:
+                  name: changer-config
+                  key: FQDN_CONDUCTOR
+          - name: CONDUCTOR_PROVIDER_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CONDUCTOR_PROVIDER_NAME
+          - name: CONDUCTOR_RECORD_OFF_TRAFFIC
+              valueFrom:
+                configMapKeyRef:
+                  name: changer-config
+                  key: CONDUCTOR_RECORD_OFF_TRAFFIC
+          - name: CONDUCTOR_RECORD_ON_TRAFFIC
+              valueFrom:
+                configMapKeyRef:
+                  name: changer-config
+                  key: CONDUCTOR_RECORD_ON_TRAFFIC
+
+
+
+
+
+

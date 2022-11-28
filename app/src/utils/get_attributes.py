@@ -1,19 +1,17 @@
 import json
-from dotenv import load_dotenv
 import requests
 import os
 from app.src.models.vpn_attributes import VPNAttributes
 
-load_dotenv()
 
-cdc_host = os.environ.get('CDC_HOST')
-domain = os.environ.get('DOMAIN')
+cdc_host = os.environ['CDC_HOST']
+domain = os.environ['DOMAIN']
 
 
 def get_vpn_alternate(vpn_name: str, token: str):
     if vpn_name == 'conductor':
-        fqdn = os.environ.get('FQDN_CONDUCTOR')
-        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
+        fqdn = os.environ['FQDN_CONDUCTOR']
+        url = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
 
         payload = {}
         headers = {
@@ -22,7 +20,7 @@ def get_vpn_alternate(vpn_name: str, token: str):
 
         response = requests.request(
             'GET',
-            URL,
+            url,
             headers=headers,
             data=payload
         )
@@ -41,8 +39,8 @@ def get_vpn_alternate(vpn_name: str, token: str):
 
 def get_record_alternate_id(vpn_name: str, token: str):
     if vpn_name == 'conductor':
-        fqdn = os.environ.get('FQDN_CONDUCTOR')
-        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
+        fqdn = os.environ['FQDN_CONDUCTOR']
+        url = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
 
         payload = {}
         headers = {
@@ -51,7 +49,7 @@ def get_record_alternate_id(vpn_name: str, token: str):
 
         response = requests.request(
             'GET',
-            URL,
+            url,
             headers=headers,
             data=payload
         )
@@ -71,8 +69,8 @@ def get_record_alternate_id(vpn_name: str, token: str):
 
 def get_vpn_location(vpn_name: str, token: str):
     if vpn_name == 'conductor':
-        fqdn = os.environ.get('FQDN_CONDUCTOR')
-        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
+        fqdn = os.environ['FQDN_CONDUCTOR']
+        url = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
 
         payload = {}
         headers = {
@@ -81,7 +79,7 @@ def get_vpn_location(vpn_name: str, token: str):
 
         response = requests.request(
             'GET',
-            URL,
+            url,
             headers=headers,
             data=payload
         )
@@ -100,8 +98,8 @@ def get_vpn_location(vpn_name: str, token: str):
 
 def get_record_location_id(vpn_name: str, token: str):
     if vpn_name == 'conductor':
-        fqdn = os.environ.get('FQDN_CONDUCTOR')
-        URL = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
+        fqdn = os.environ['FQDN_CONDUCTOR']
+        url = 'https://' + cdc_host + '/domains/' + domain + '/subdomains/' + fqdn + '/records'
 
         payload = {}
         headers = {
@@ -110,7 +108,7 @@ def get_record_location_id(vpn_name: str, token: str):
 
         response = requests.request(
             'GET',
-            URL,
+            url,
             headers=headers,
             data=payload
         )

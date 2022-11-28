@@ -8,7 +8,7 @@ Parameters:
   EksClusterName:
     Type: String
     Description: The name of the EKS cluster created
-    Default: k8s-cluster01-staging
+    Default: k8s-cluster01-production
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter the EKS cluster name
@@ -32,7 +32,7 @@ Parameters:
 
   GitBranch:
     Type: String
-    Default: staging
+    Default: main
     Description: GitHub git repository branch - change triggers a new build
     ConstraintDescription: You must enter a GitHub repository branch name
 
@@ -61,7 +61,7 @@ Parameters:
 
   KubectlRoleName:
     Type: String
-    Default: instance-eksctl-stg
+    Default: instance-eksctl-prod
     Description: IAM role used by kubectl to interact with EKS cluster
     MinLength: 3
     MaxLength: 100
@@ -90,7 +90,7 @@ Parameters:
 
   BuildSpecPath:
     Type: String
-    Default: .devops/environments/stage/deploy/deployspec.yml
+    Default: .devops/pipelines/deployspec-prod.yml
     Description: Custom Path buildspec.yml
     MinLength: 3
     MaxLength: 100
@@ -283,11 +283,14 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecPath
       VpcConfig:
-        VpcId: vpc-facd049c
+        VpcId: vpc-db0a9fbc
         Subnets:
-          - subnet-07f31ecee4ad38a4a
+          - subnet-06fc7ee701a8ebe0a
+          - subnet-0e472e2919bc758c6
+          - subnet-0c919f778431192a4
+          - subnet-047d14098def0872a
         SecurityGroupIds:
-          - sg-0beacb292f6270bef
+          - sg-008bbbcac81152bd4
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
         PrivilegedMode: true

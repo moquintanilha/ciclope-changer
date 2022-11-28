@@ -55,14 +55,14 @@ Parameters:
     ConstraintDescription: Ambiente
   BuildSpecPath:
     Type: String
-    Default: .devops/environments/prod/build/buildspec.yml
+    Default: .devops/pipelines/buildspec.yml
     Description: Custom Path buildspec.yml
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
   BuildSpecPathTest:
     Type: String
-    Default: .devops/environments/prod/build/testspec.yml
+    Default: .devops/pipelines/testspec.yml
     Description: Custom Path testspec.yml
     MinLength: 3
     MaxLength: 100
@@ -113,13 +113,13 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       BucketName: !Sub
-        - k8s-${STACK_NAME}-${ApplicationScope}-artifacts-store
+        - k8s-${STACK_NAME}-artifacts-store
         - { STACK_NAME: !Ref AWS::StackName }
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub
-        - CodePipeline-ServiceRole-${STACK_NAME}-${ApplicationScope}
+        - CodePipeline-ServiceRole-${STACK_NAME}
         - { STACK_NAME: !Ref AWS::StackName }
       Path: /
       AssumeRolePolicyDocument:
@@ -236,14 +236,11 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecPath
       VpcConfig:
-        VpcId: vpc-db0a9fbc
+        VpcId: vpc-facd049c
         Subnets:
-          - subnet-06fc7ee701a8ebe0a
-          - subnet-0e472e2919bc758c6
-          - subnet-0c919f778431192a4
-          - subnet-047d14098def0872a
+          - subnet-07f31ecee4ad38a4a
         SecurityGroupIds:
-          - sg-008bbbcac81152bd4
+          - sg-0beacb292f6270bef
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
         PrivilegedMode: true
@@ -279,14 +276,11 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: !Ref BuildSpecPathTest
       VpcConfig:
-        VpcId: vpc-db0a9fbc
+        VpcId: vpc-facd049c
         Subnets:
-          - subnet-06fc7ee701a8ebe0a
-          - subnet-0e472e2919bc758c6
-          - subnet-0c919f778431192a4
-          - subnet-047d14098def0872a
+          - subnet-07f31ecee4ad38a4a
         SecurityGroupIds:
-          - sg-008bbbcac81152bd4
+          - sg-0beacb292f6270bef
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
         PrivilegedMode: true

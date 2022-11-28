@@ -1,7 +1,19 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
-Description: Build pipeline creation
+
+Description: Deploy/Release pipeline creation
+
 Parameters:
+
+  EksClusterName:
+    Type: String
+    Description: The name of the EKS cluster created
+    Default: k8s-cluster01-staging
+    MinLength: 1
+    MaxLength: 100
+    ConstraintDescription: You must enter the EKS cluster name
+
+  # TODO: Update this to final repo name
   GitOwner:
     Type: String
     Description: GitHub owner repository - must contain a Dockerfile and buildspec.yml in the base
@@ -9,6 +21,7 @@ Parameters:
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
+
   GitSourceRepo:
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
@@ -16,11 +29,13 @@ Parameters:
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
+
   GitBranch:
     Type: String
-    Default: develop
+    Default: staging
     Description: GitHub git repository branch - change triggers a new build
     ConstraintDescription: You must enter a GitHub repository branch name
+
   GitHubToken:
     Type: String
     NoEcho: true
@@ -28,12 +43,14 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub personal access token
+
   GitHubUser:
     Type: String
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub username or organization
+
   CodeBuildDockerImage:
     Type: String
     Default: aws/codebuild/standard:6.0
@@ -41,38 +58,51 @@ Parameters:
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: You must enter a CodeBuild Docker image
+
+  KubectlRoleName:
+    Type: String
+    Default: instance-eksctl-stg
+    Description: IAM role used by kubectl to interact with EKS cluster
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: You must enter a kubectl IAM role
+
   ApplicationName:
     Type: String
     Description: Nombre de aplicacion
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: Nombre de la aplicacion
+
+  NameSpaceName:
+    Type: String
+    Description: Nombre de k8s namespace
+    MinLength: 3
+    MaxLength: 100
+    ConstraintDescription: Nombre de k8s namespace
+
   ApplicationScope:
     Type: String
     Description: Ambiente
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: Ambiente
+
   BuildSpecPath:
     Type: String
-    Default: .devops/environments/stage/build/buildspec.yml
+    Default: .devops/pipelines/deployspec-stage.yml
     Description: Custom Path buildspec.yml
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
-  BuildSpecPathTest:
-    Type: String
-    Default: .devops/environments/stage/build/testspec.yml
-    Description: Custom Path testspec.yml
-    MinLength: 3
-    MaxLength: 100
-    ConstraintDescription: CODEBUILD_SRC_DIR
+  
   ChatOpsUrl:
     Type: String
     Description: Full slack url
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: Full slack url
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -87,6 +117,14 @@ Metadata:
           default: CodeBuild
         Parameters:
           - CodeBuildDockerImage
+      - Label:
+          default: IAM
+        Parameters:
+          - KubectlRoleName
+      - Label:
+          default: EKS
+        Parameters:
+          - EksClusterName
     ParameterLabels:
       GitHubUser:
         default: Username
@@ -98,16 +136,16 @@ Metadata:
         default: Branch
       CodeBuildDockerImage:
         default: Docker image
+      KubectlRoleName:
+        default: kubectl IAM role
+      EksClusterName:
+        default: EKS cluster name
       ChatOpsUrl:
         default: Full chatops url
+
 Resources:
-  EcrDockerRepository:
-    Type: AWS::ECR::Repository
-    DeletionPolicy: Retain
-    Properties:
-      RepositoryName: !Sub
-        - k8s-${STACK_NAME}-ecr
-        - { STACK_NAME: !Ref AWS::StackName }
+
+
   CodePipelineArtifactBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
@@ -115,6 +153,7 @@ Resources:
       BucketName: !Sub
         - k8s-${STACK_NAME}-artifacts-store
         - { STACK_NAME: !Ref AWS::StackName }
+
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -153,7 +192,8 @@ Resources:
                   - s3:GetObject
                   - s3:GetObjectVersion
                   - s3:GetBucketVersioning
-    DependsOn: EcrDockerRepository
+
+
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -177,6 +217,10 @@ Resources:
                 Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
+              - Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${KubectlRoleName}
+                Effect: Allow
+                Action:
+                  - sts:AssumeRole
               - Resource: '*'
                 Effect: Allow
                 Action:
@@ -217,17 +261,20 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                   - s3:GetObjectVersion
-              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${EcrDockerRepository}
+              - Resource: '*'
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/k8s-ciclope-chatops-build-ecr
                 Effect: Allow
                 Action:
                   - ecr:GetDownloadUrlForLayer
                   - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
-                  - ecr:PutImage
-                  - ecr:InitiateLayerUpload
-                  - ecr:UploadLayerPart
-                  - ecr:CompleteLayerUpload
-  CodeBuildProject:
+
+  CodeBuildDeployProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
@@ -248,11 +295,15 @@ Resources:
         Image: !Ref CodeBuildDockerImage
         EnvironmentVariables:
           - Name: REPOSITORY_URI
-            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrDockerRepository}
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/k8s-ciclope-chatops-build-ecr
           - Name: REPOSITORY_NAME
             Value: !Ref GitSourceRepo
           - Name: REPOSITORY_BRANCH
             Value: !Ref GitBranch
+          - Name: EKS_CLUSTER_NAME
+            Value: !Ref EksClusterName
+          - Name: EKS_KUBECTL_ROLE_ARN
+            Value: !Sub arn:aws:iam::${AWS::AccountId}:role/${KubectlRoleName}
           - Name: APPLICATION_NAME
             Value: !Ref ApplicationName
           - Name: APPLICATION
@@ -261,52 +312,17 @@ Resources:
             Value: !Ref ApplicationScope
           - Name: SCOPE
             Value: !Ref ApplicationScope
+          - Name: K8S_NAMESPACE
+            Value: !Ref NameSpaceName
           - Name: CHATOPS_URL
             Value: !Ref ChatOpsUrl
+
       Name: !Sub
-        - Build-${STACK_NAME}
+        - Deploy-${STACK_NAME}
         - { STACK_NAME: !Ref AWS::StackName }
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-  CodeBuildTestProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Artifacts:
-        Type: CODEPIPELINE
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: !Ref BuildSpecPathTest
-      VpcConfig:
-        VpcId: vpc-facd049c
-        Subnets:
-          - subnet-07f31ecee4ad38a4a
-        SecurityGroupIds:
-          - sg-0beacb292f6270bef
-      Environment:
-        ComputeType: BUILD_GENERAL1_SMALL
-        PrivilegedMode: true
-        Type: LINUX_CONTAINER
-        Image: !Ref CodeBuildDockerImage
-        EnvironmentVariables:
-          - Name: REPOSITORY_URI
-            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrDockerRepository}
-          - Name: REPOSITORY_NAME
-            Value: !Ref GitSourceRepo
-          - Name: REPOSITORY_BRANCH
-            Value: !Ref GitBranch
-          - Name: APPLICATION_NAME
-            Value: !Ref ApplicationName
-          - Name: APPLICATION
-            Value: !Ref ApplicationName
-          - Name: APPLICATION_SCOPE
-            Value: !Ref ApplicationScope
-          - Name: SCOPE
-            Value: !Ref ApplicationScope
-          - Name: CHATOPS_URL
-            Value: !Ref ChatOpsUrl
-      Name: !Sub
-        - BuildTest-${STACK_NAME}
-        - { STACK_NAME: !Ref AWS::StackName }
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+
+
   CodePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -334,36 +350,20 @@ Resources:
               OutputArtifacts:
                 - Name: GitHubCode
               RunOrder: 1
-        - Name: Test
+        - Name: Deploy
           Actions:
-            - Name: Test
-              ActionTypeId:
-                Category: Test
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref CodeBuildTestProject
-              InputArtifacts:
-                - Name: GitHubCode
-              OutputArtifacts:
-                - Name: TestOutput
-              RunOrder: 3
-              Namespace: NsTest
-        - Name: Build
-          Actions:
-            - Name: Build
+            - Name: Deploy
               ActionTypeId:
                 Category: Build
                 Owner: AWS
                 Version: 1
                 Provider: CodeBuild
               Configuration:
-                ProjectName: !Ref CodeBuildProject
+                ProjectName: !Ref CodeBuildDeployProject
               InputArtifacts:
                 - Name: GitHubCode
               OutputArtifacts:
                 - Name: BuildOutput
-              RunOrder: 2
-              Namespace: NsBuildStage
-    DependsOn: CodeBuildProject
+              RunOrder: 1
+              Namespace: NsDeploy
+    DependsOn: CodeBuildDeployProject
