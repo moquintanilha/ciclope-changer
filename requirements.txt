@@ -1,0 +1,9 @@
+fastapi == 0.85.0
+requests == 2.25.1
+pydantic == 1.10.2
+pytest == 7.1.2
+pytest-cov == 4.0.0
+pytest-asyncio == 0.20.1
+typing == 3.7.4.3
+uvicorn == 0.18.3
+
