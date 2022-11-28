@@ -2,7 +2,7 @@ import requests
 import os
 
 
-chat_ops_url = os.environ['CHAT_OPS_URL']
+chat_ops_url = os.environ['CHATOPS_URL']
 
 
 def send_msg(host: str, vpn_alternate: str):
