@@ -45,7 +45,7 @@ then
     PIPELINE_FILE_PATH="./cf-stacks/build-test-pipeline.yml"
     aws cloudformation deploy \
     --template ${PIPELINE_FILE_PATH} \
-    --stack-name ${APPNAME}-${PIPELINE_TYPE}-${APPLICATION_SCOPE} \
+    --stack-name ${APPNAME}-${PIPELINE_TYPE} \
     --region ${REGION} \
     --parameter-overrides \
     GitHubUser=${GITHUB_USER} \
