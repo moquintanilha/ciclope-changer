@@ -70,25 +70,25 @@ spec:
                 name: changer-config
                 key: CONDUCTOR_DESCRIPTION
           - name: FQDN_CONDUCTOR
-              valueFrom:
-                configMapKeyRef:
-                  name: changer-config
-                  key: FQDN_CONDUCTOR
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: FQDN_CONDUCTOR
           - name: CONDUCTOR_PROVIDER_NAME
             valueFrom:
               configMapKeyRef:
                 name: changer-config
                 key: CONDUCTOR_PROVIDER_NAME
           - name: CONDUCTOR_RECORD_OFF_TRAFFIC
-              valueFrom:
-                configMapKeyRef:
-                  name: changer-config
-                  key: CONDUCTOR_RECORD_OFF_TRAFFIC
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CONDUCTOR_RECORD_OFF_TRAFFIC
           - name: CONDUCTOR_RECORD_ON_TRAFFIC
-              valueFrom:
-                configMapKeyRef:
-                  name: changer-config
-                  key: CONDUCTOR_RECORD_ON_TRAFFIC
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: CONDUCTOR_RECORD_ON_TRAFFIC
 
 
 
