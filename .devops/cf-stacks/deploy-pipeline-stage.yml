@@ -90,7 +90,7 @@ Parameters:
 
   BuildSpecPath:
     Type: String
-    Default: .devops/environments/stage/deploy/deployspec.yml
+    Default: .devops/pipelines/deployspec-stage.yml
     Description: Custom Path buildspec.yml
     MinLength: 3
     MaxLength: 100

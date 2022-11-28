@@ -30,7 +30,4 @@ phases:
     finally:
       - echo "OVERRIDE EKS_KUBECTL_ROLE_ARN now is $EKS_KUBECTL_ROLE_ARN"
       - aws eks --region us-east-1 update-kubeconfig --name $EKS_CLUSTER_NAME
-      - kubectl apply -f .devops/environments/stage/deploy/k8s/namespace.yaml
-      - kubectl apply -f .devops/environments/stage/deploy/k8s/configmap.yaml
-      - kubectl apply -f .devops/environments/stage/deploy/k8s/deployment.yaml
-      - kubectl apply -f .devops/environments/stage/deploy/k8s/service.yaml
+      - kubectl apply -f .devops/environments/prod/
