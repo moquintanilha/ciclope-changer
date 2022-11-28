@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: changer
-        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-0.2.0
+        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-0.2.1
         imagePullPolicy: Always
         resources:
           requests:
