@@ -1,10 +1,8 @@
-from dotenv import load_dotenv
 import requests
 import os
 
-load_dotenv()
 
-chat_ops_url = os.environ.get('CHAT_OPS_URL')
+chat_ops_url = os.environ['CHAT_OPS_URL']
 
 
 def send_msg(host: str, vpn_alternate: str):

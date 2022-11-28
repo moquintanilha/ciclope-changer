@@ -55,14 +55,14 @@ Parameters:
     ConstraintDescription: Ambiente
   BuildSpecPath:
     Type: String
-    Default: .devops/environments/stage/build/buildspec.yml
+    Default: .devops/pipelines/buildspec.yml
     Description: Custom Path buildspec.yml
     MinLength: 3
     MaxLength: 100
     ConstraintDescription: CODEBUILD_SRC_DIR
   BuildSpecPathTest:
     Type: String
-    Default: .devops/environments/stage/build/testspec.yml
+    Default: .devops/pipelines/testspec.yml
     Description: Custom Path testspec.yml
     MinLength: 3
     MaxLength: 100

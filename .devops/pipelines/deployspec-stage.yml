@@ -1,0 +1,33 @@
+---
+version: 0.2
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      python: 3.10
+    commands:
+      - curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      - echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+      - apt-get update && apt-get install -y kubectl
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip awscliv2.zip > /dev/null
+      - ./aws/install --update
+      - CREDENTIALS=$(aws sts assume-role --role-arn ${EKS_KUBECTL_ROLE_ARN} --role-session-name ciclope-changer --duration-seconds 900)
+      - export AWS_ACCESS_KEY_ID="$(echo ${CREDENTIALS} | jq -r '.Credentials.AccessKeyId')"
+      - export AWS_SECRET_ACCESS_KEY="$(echo ${CREDENTIALS} | jq -r '.Credentials.SecretAccessKey')"
+      - export AWS_SESSION_TOKEN="$(echo ${CREDENTIALS} | jq -r '.Credentials.SessionToken')"
+      - export AWS_EXPIRATION=$(echo ${CREDENTIALS} | jq -r '.Credentials.Expiration')
+      - export VERSION=$(cat version.json | jq .version | sed 's/"//g')
+      - echo "VERSION -> ${VERSION}"
+      - echo "APPLICATION_NAME -> $APPLICATION_NAME"
+      - echo "EKS_KUBECTL_ROLE_ARN -> $EKS_KUBECTL_ROLE_ARN"
+      - echo "EKS_CLUSTER_NAME -> $EKS_CLUSTER_NAME"
+      - echo "REPOSITORY_URI -> $REPOSITORY_URI"
+      - echo "K8S_NAMESPACE -> ${K8S_NAMESPACE}"
+      - echo "REPOSITORY_NAME -> ${REPOSITORY_NAME}"
+      - echo "REPOSITORY_BRANCH -> ${REPOSITORY_BRANCH}"
+    finally:
+      - echo "OVERRIDE EKS_KUBECTL_ROLE_ARN now is $EKS_KUBECTL_ROLE_ARN"
+      - aws eks --region us-east-1 update-kubeconfig --name $EKS_CLUSTER_NAME
+      - kubectl apply -f .devops/environments/stage/

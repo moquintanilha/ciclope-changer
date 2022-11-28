@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  CHATOPS_URL: http://ciclope-chatops.ciclope:7073/app/v1/send
+  CDC_HOST: pdc.furycloud.io
+  DOMAIN: mercadplibre.io
+  CONDUCTOR_RECORD_TTL: "60"
+  CONDUCTOR_RECORD_TYPE: "A"
+  CONDUCTOR_DESCRIPTION: "Conductor"
+  FQDN_CONDUCTOR: conductor-prd-in-cloudexchange.mercadolibre.io
+  CONDUCTOR_PROVIDER_NAME: Amazon-Fury_Core
+  CONDUCTOR_RECORD_OFF_TRAFFIC: "0"
+  CONDUCTOR_RECORD_ON_TRAFFIC: "255"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: changer-config
+  namespace: ciclope
