@@ -11,6 +11,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: App start
+        env:
+          CHATOPS_URL: ${{ secrets.CHATOPS_URL }}
+          CDC_HOST: ${{ secrets.CDC_HOST }}
+          DOMAIN: ${{ secrets.DOMAIN }}
+          CONDUCTOR_RECORD_TTL: ${{ secrets.CONDUCTOR_RECORD_TTL }}
+          CONDUCTOR_RECORD_TYPE: ${{ secrets.CONDUCTOR_RECORD_TYPE }}
+          CONDUCTOR_DESCRIPTION: ${{ secrets.CONDUCTOR_DESCRIPTION }}
+          FQDN_CONDUCTOR: ${{ secrets.FQDN_CONDUCTOR }}
+          CONDUCTOR_PROVIDER_NAME: ${{ secrets.CONDUCTOR_PROVIDER_NAME }}
+          CONDUCTOR_RECORD_OFF_TRAFFIC: ${{ secrets.CONDUCTOR_RECORD_OFF_TRAFFIC }}
+          CONDUCTOR_RECORD_ON_TRAFFIC: ${{ secrets.CONDUCTOR_RECORD_ON_TRAFFIC }}
         run: |
           bash ${GITHUB_WORKSPACE}/start.sh &
       - name: Run test
