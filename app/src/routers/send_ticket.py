@@ -1,24 +1,21 @@
 import json
 from typing import Union
 from fastapi import APIRouter, Header, status, Depends
-from app.src.utils.mgmt_record import update_record_alternate, update_record_location
-from app.src.exceptions.verify_token import verify_token
+from app.src.exceptions.verify_comment import verify_comment
+from app.src.utils.change_record import switch_vpn
 
 router = APIRouter(
     prefix='/api',
     tags=['Action'],
-    responses={401: {"description": "Unauthorized"}},
+    responses={200: {"Description": "Success"}},
 )
 
 
 @router.patch(
     '/action/{vpn_name}/{requester}',
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(verify_token)],
+    dependencies=[Depends(verify_comment)],
 )
-async def send_ticket(vpn_name: str, requester: str, x_auth_token: Union[str] = Header()):
-    response_body = {
-        'alternate': update_record_alternate(vpn_name, requester, x_auth_token),
-        'location': update_record_location(vpn_name, requester, x_auth_token)
-    }
-    return json.dumps(response_body, indent=4)
+async def send_ticket(vpn_name: str, requester: str, comment: Union[str] = Header()):
+    response = switch_vpn(vpn_name, requester, comment)
+    return json.dumps(response, indent=4)
