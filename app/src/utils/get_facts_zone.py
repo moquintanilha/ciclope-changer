@@ -15,7 +15,8 @@ def get_facts_record():
         )
         records = []
         for i in response['ResourceRecordSets']:
-            if 'conductor-stg-in-cloudexchange.mercadolibre.io.' in i['Name']:
+            scope = os.environ['SCOPE']
+            if 'conductor-' + scope + '-in-cloudexchange.mercadolibre.io.' in i['Name']:
                 obj = Record(i['Name'], i['SetIdentifier'], i['Weight'], i['ResourceRecords'][0]['Value'])
                 records.append({
                     'name': obj.name,
