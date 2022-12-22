@@ -7,7 +7,6 @@ from app.src.utils.change_record import switch_vpn
 router = APIRouter(
     prefix='/api',
     tags=['Action'],
-    responses={200: {"Description": "Success"}},
 )
 
 

@@ -76,9 +76,9 @@ def switch_vpn(vpn_name: str, requester: str, comment: str):
                     )
         if response_alternate['ResponseMetadata']['HTTPStatusCode'] == 200 and \
                 response_location['ResponseMetadata']['HTTPStatusCode'] == 200:
-            logger.warning('requester: ' + requester)
-            logger.warning('VPN: ' + vpn_name)
-            logger.warning('message: success, comment: ' + comment)
+            logger.info('Received a request to change traffic on the VPN ' + vpn_name)
+            logger.info('requester: ' + requester)
+            logger.info('comment: ' + comment)
             send_msg(fqdn, vpn_alternate)
     except Exception as e:
         raise e
