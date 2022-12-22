@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: changer
-        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-0.2.2
+        image: 149815134901.dkr.ecr.us-east-1.amazonaws.com/k8s-ciclope-changer-build-ecr:ciclope-changer-0.3.0
         imagePullPolicy: Always
         resources:
           requests:
@@ -92,6 +92,26 @@ spec:
               configMapKeyRef:
                 name: changer-config
                 key: CONDUCTOR_RECORD_ON_TRAFFIC
+          - name: SCOPE
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: SCOPE
+          - name: HOSTED_ZONE_ID
+            valueFrom:
+              configMapKeyRef:
+                name: changer-config
+                key: HOSTED_ZONE_ID
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: ciclope-credentials
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ciclope-credentials
+                key: AWS_SECRET_ACCESS_KEY
 
 
 
