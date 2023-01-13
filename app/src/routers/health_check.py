@@ -1,12 +1,14 @@
 from fastapi import APIRouter
 
 router = APIRouter(
-    prefix='/api',
     tags=['Health Check'],
     responses={500: {"description": "Internal server error"}},
 )
 
 
-@router.get('/health-check')
+@router.get('/ping')
 async def health_check():
-    return {'message': 'UP'}
+    try:
+        return 'pong'
+    except Exception as e:
+        raise e
